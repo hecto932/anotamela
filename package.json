@@ -1,0 +1,25 @@
+{
+  "name": "anotamela",
+  "version": "1.0.0",
+  "description": "una aplicacion para crear notas",
+  "main": "server.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hecto932/anotamela.git"
+  },
+  "author": "Hector Flores",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hecto932/anotamela/issues"
+  },
+  "homepage": "https://github.com/hecto932/anotamela",
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "express": "^4.9.4",
+    "mocha": "^1.21.4",
+    "supertest": "^0.13.0"
+  }
+}
