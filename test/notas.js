@@ -57,7 +57,7 @@ describe('recurso /notas', function(){
             }
         };
 
-        // crear solicitud de http enviando data
+        // crear nota nueva
         request
             .post('/notas')
             .send(data)
@@ -67,7 +67,7 @@ describe('recurso /notas', function(){
                 var id = res.body.nota.id;
 
                 request
-                    .get('/notas'+id)
+                    .get('/notas/'+id)
                     .expect(200)
                     .expect('Content-Type', /application\/json/)
                     .end(function(err, res){
@@ -77,7 +77,7 @@ describe('recurso /notas', function(){
                         expect(nota).to.have.property('description', 'Introduccion a clase');
                         expect(nota).to.have.property('type', 'js');
                         expect(nota).to.have.property('body', 'soy el cuerpo de json');
-                        expect(nota).to.have.property('id');
+                        expect(nota).to.have.property('id', id);
 
                         done();
                     });
