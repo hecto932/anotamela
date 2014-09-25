@@ -7,45 +7,42 @@ request = request(host);
 describe('recurso /notas', function(){
 	describe('POST', function(){
     it("deberia de crear una nota nueva", function(done){
-      var data = {
-        "title": "Mejorando.la #node-pro",
-        "description": "Introduccion a clase",
-        "type": "js",
-        "body": "soy el cuerpo de json"
-      };
+        var data = {
+            "nota": {
+                "title": "Mejorando.la #node-pro",
+                "description": "Introduccion a clase",
+                "type": "js",
+                "body": "soy el cuerpo de json"
+            }
+        };
 
-      // crear solicitud de http enviando data
-      request
-        .post('/notas')
-        // Accept application/json
-        .set('Accept', 'application/json')
-        // Status Code = 201
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-        .end(function(err, res){
-          var body = res.body;
+        // crear solicitud de http enviando data
+        request
+            .post('/notas')
+            .set('Accept', 'application/json')
+            .send(data)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+            .end(function(err, res) {
+                var nota;
 
-          expect(body).to.have.property('nota');
+                var body = res.body;
+                console.log('body', body);
 
-          nota = body.notas;
+                // Nota existe
+                expect(body).to.have.property('nota');
+                nota = body.nota;
 
-          expect(body).to.have.property('title', 'Mejorando.la #node-pro');
-          expect(body).to.have.property('description', 'Introduccion a clase');
-          expect(body).to.have.property('type', 'js');
-          expect(body).to.have.property('body', 'soy el cuerpo de json');
-          expect(body).to.have.property('id');
-          done();
-
-
-        });
-      // cuerpo de la solicitud debe tenr una nota en JS
-
-      // nota debe tener una propiedad 'title' = "Mejorando.la #node-pro"
-
-
-
-      
-
+                // Propiedades
+                // nota debe tener una propiedad 'title' = "Mejorando.la #node-pro"
+                expect(nota).to.have.property('title', 'Mejorando.la #node-pro');
+                expect(nota).to.have.property('description', 'Introduccion a clase');
+                // cuerpo de la solicitud debe tener una nota en JS
+                expect(nota).to.have.property('type', 'js');
+                expect(nota).to.have.property('body', 'soy el cuerpo de json');
+                expect(nota).to.have.property('id');
+                done(err);
+            });
 		});
 	});
 })

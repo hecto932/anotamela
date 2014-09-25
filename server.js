@@ -12,10 +12,13 @@ server.use(bodyParser.json('application/json'));
 server.post('/notas', function(req, res){
 
 	console.log('POST', req.body);
-	
+	var notaNueva = req.body.nota;
+	notaNueva.id = 123;
 	res
 		.status(201)
-		.json({});
+		.json({
+			nota:notaNueva
+		});
 });
 
 //Expose or start server
