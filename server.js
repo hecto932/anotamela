@@ -15,7 +15,7 @@ server.post('/notas', function(req, res){
 	
 	res
 		.status(201)
-		.json(req.body);
+		.json({});
 });
 
 //Expose or start server
