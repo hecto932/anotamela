@@ -4,39 +4,15 @@ var bodyParser = require('body-parser');
 
 //Local Variables
 var server = express();
-var db = {};
+
 
 //Middleware
 server.use(bodyParser.json('application/json'));
 
 //Routes
-server.post('/notas', function(req, res){
+var notas = require('./lib/notas');
 
-	console.log('POST', req.body);
-	var notaNueva = req.body.nota;
-	notaNueva.id = Date.now();
-
-	db[notaNueva.id] = notaNueva;
-
-	res
-		.status(201)
-		.json({
-			nota:notaNueva
-		});
-});
-
-server.get('/notas/:id?', function(req, res){
-	console.log('GET /notas/%s', req.params.id);
-
-	var id = req.params.id;
-	var nota = db[id];
-
-	res.json({
-		notas : nota
-	});
-
-});
-
+server.use(notas);
 //Expose or start server
 if(!module.parent)
 {
