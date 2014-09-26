@@ -1,6 +1,7 @@
-var request = require('supertest');
+var request = require('supertest-as-promised');
 var api = require('../server.js');
 var host = process.env.API_TEST_HOST || api;
+var async = require('async');
 
 request = request(host);
 
@@ -57,34 +58,69 @@ describe('recurso /notas', function(){
             }
         };
 
-        // crear nota nueva
+        var id;
+
+        //USANDO ASYNC
+        async.waterfall([
+            function createNote(cb)
+            {
+                 request
+                    .post('/notas')
+                    .send(data)
+                    .set('Accept', 'application/json')
+                    .expect(201)
+                    .end(cb)
+            },
+            function getNote(res, cb){
+                id = res.body.nota.id;
+                request
+                    .get('/notas/'+id)
+                    .expect(200)
+                    .expect('Content-Type', /application\/json/)
+                    .end(cb)
+            },
+            function assertions(res, cb){
+                var nota = res.body.notas;
+
+                expect(nota).to.have.property('title', 'Mejorando.la #node-pro');
+                expect(nota).to.have.property('description', 'Introduccion a clase');
+                expect(nota).to.have.property('type', 'js');
+                expect(nota).to.have.property('body', 'soy el cuerpo de json');
+                expect(nota).to.have.property('id', id);
+                cb();
+            }
+        ],done);
+        /*
+       //USANDO PROMISES
+        
         request
             .post('/notas')
             .send(data)
             .set('Accept', 'application/json')
             .expect(201)
-            .end(function(err,res){
-                var id = res.body.nota.id;
+            .then(function(res){
+                id = res.body.nota.id;
 
-                request
+                return request
                     .get('/notas/'+id)
                     .expect(200)
                     .expect('Content-Type', /application\/json/)
-                    .end(function(err, res){
-                        var nota = res.body.notas;
+            },done)
+            .then(function(res){
+                var nota = res.body.notas;
 
-                        expect(nota).to.have.property('title', 'Mejorando.la #node-pro');
-                        expect(nota).to.have.property('description', 'Introduccion a clase');
-                        expect(nota).to.have.property('type', 'js');
-                        expect(nota).to.have.property('body', 'soy el cuerpo de json');
-                        expect(nota).to.have.property('id', id);
+                expect(nota).to.have.property('title', 'Mejorando.la #node-pro');
+                expect(nota).to.have.property('description', 'Introduccion a clase');
+                expect(nota).to.have.property('type', 'js');
+                expect(nota).to.have.property('body', 'soy el cuerpo de json');
+                expect(nota).to.have.property('id', id);
 
-                        done();
-                    });
-            })
+                done();
+            }, done);
             //POST data
             //GET
             //expect
+            */
         });
     });
 })
