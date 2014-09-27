@@ -50,13 +50,13 @@ describe('recurso /notas', function(){
     describe('GET', function(){
         it('deberia obtener una nota existente', function(done){
             var data = {
-            "nota": {
-                "title": "Mejorando.la #node-pro",
-                "description": "Introduccion a clase",
-                "type": "js",
-                "body": "soy el cuerpo de json"
-            }
-        };
+                "nota": {
+                    "title": "Mejorando.la #node-pro",
+                    "description": "Introduccion a clase",
+                    "type": "js",
+                    "body": "soy el cuerpo de json"
+                }
+            };
 
         var id;
 
@@ -121,6 +121,62 @@ describe('recurso /notas', function(){
             //GET
             //expect
             */
+        });
+    });
+
+    describe('PUT', function(){
+        it('deberia actualizar una nota existente', function(done){
+            // crear una nota (POST)
+            var id;
+            var data = {
+                "nota": {
+                    "title": "Mejorando.la #node-pro",
+                    "description": "Introduccion a clase",
+                    "type": "js",
+                    "body": "soy el cuerpo de json"
+                }
+            };
+
+            request
+                .post('/notas')
+                .set('Accept', 'application/json')
+                .send(data)
+                //obtener la nota creada (GET)
+                .then(function getNote(res){
+                    id = res.body.nota.id;
+
+                    return request
+                            .get('/notas/' + id)
+                            .set('Accept', 'application/json')
+                            .send()
+                },done)
+                //modificar la nota
+                .then(function updateNote(res){
+                    var body = res.body;
+                    var notaActualizada = body.notas;
+
+                    notaActualizada.title = 'Juan pablo no sabe escribir ejecución';
+
+                    // enviar nota actualizada (PUT)
+                    return request
+                        .put('/notas/'+ id)
+                        .send(notaActualizada)
+                        .expect(200)
+                        .expect('Content-Type', /application\/json/)
+                    
+                }, done)
+                // evaluar que la nota se haya actualizado correctamente
+                .then(function assertions(res){
+                    var nota = res.body.nota;
+
+                    expect(nota).to.have.property('title', 'Juan pablo no sabe escribir ejecución');
+                    expect(nota).to.have.property('description', 'Introduccion a clase');
+                    expect(nota).to.have.property('type', 'js');
+                    expect(nota).to.have.property('body', 'soy el cuerpo de json');
+                    expect(nota).to.have.property('id', id);
+                    done();
+                }, done);
+
         });
     });
 })
