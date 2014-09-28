@@ -126,7 +126,6 @@ describe('recurso /notas', function(){
 
     describe('PUT', function(){
         it('deberia actualizar una nota existente', function(done){
-            // crear una nota (POST)
             var id;
             var data = {
                 "nota": {
@@ -141,39 +140,42 @@ describe('recurso /notas', function(){
                 .post('/notas')
                 .set('Accept', 'application/json')
                 .send(data)
-                //obtener la nota creada (GET)
+                .expect(201)
+                .expect('Content-Type', /application\/json/)
                 .then(function getNote(res){
+                    var update = {
+                        "nota": {
+                            "title": "Mejorando.la #node-pro",
+                            "description": "Introduccion a clase",
+                            "type": "ruby",
+                            "body": "soy el cuerpo de ruby"
+                        }
+                    };
+
                     id = res.body.nota.id;
 
-                    return request
-                            .get('/notas/' + id)
-                            .set('Accept', 'application/json')
-                            .send()
+                    return request.put('/notas/' + id)
+                      .set('Accept', 'application/json')
+                      .send(update)
+                      .expect(200)
+                      .expect('Content-Type', /application\/json/)
                 },done)
-                //modificar la nota
-                .then(function updateNote(res){
+                .then(function assertions(res) {
+                    var nota;
                     var body = res.body;
-                    var notaActualizada = body.notas;
 
-                    notaActualizada.title = 'Juan pablo no sabe escribir ejecución';
+                    // Nota existe
+                    expect(body).to.have.property('nota');
+                    expect(body.nota).to.be.an('array')
+                      .and.to.have.length(1);
+                    nota = body.nota[0];
 
-                    // enviar nota actualizada (PUT)
-                    return request
-                        .put('/notas/'+ id)
-                        .send(notaActualizada)
-                        .expect(200)
-                        .expect('Content-Type', /application\/json/)
-                    
-                }, done)
-                // evaluar que la nota se haya actualizado correctamente
-                .then(function assertions(res){
-                    var nota = res.body.nota;
-
-                    expect(nota).to.have.property('title', 'Juan pablo no sabe escribir ejecución');
-                    expect(nota).to.have.property('description', 'Introduccion a clase');
-                    expect(nota).to.have.property('type', 'js');
-                    expect(nota).to.have.property('body', 'soy el cuerpo de json');
+                    // Propiedades
                     expect(nota).to.have.property('id', id);
+                    expect(nota).to.have.property('title', 'Mejorando.la #node-pro');
+                    expect(nota).to.have.property('description', 'Introduccion a clase');
+                    expect(nota).to.have.property('type', 'ruby');
+                    expect(nota).to.have.property('body', 'soy el cuerpo de ruby');
                     done();
                 }, done);
 
