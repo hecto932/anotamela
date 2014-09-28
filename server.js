@@ -1,6 +1,7 @@
 //Dependencies
 var express = require('express');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 //Local Variables
 var server = express();
@@ -8,6 +9,7 @@ var server = express();
 
 //Middleware
 server.use(bodyParser.json('application/json'));
+server.use(cors());
 
 //Routes
 var notas = require('./lib/notas');
