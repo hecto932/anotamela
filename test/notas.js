@@ -7,7 +7,7 @@ request = request(host);
 
 describe('recurso /notas', function(){
 	describe('POST', function(){
-    it("deberia de crear una nota nueva", function(done){
+        it("deberia de crear una nota nueva", function(done){
         var data = {
             "nota": {
                 "title": "Mejorando.la #node-pro",
@@ -179,6 +179,44 @@ describe('recurso /notas', function(){
                     done();
                 }, done);
 
+        });
+    });
+
+    describe('DELETE', function(){
+        it('deberia eliminar una nota existente', function(done){
+            // crear una nota
+            var id;
+            var data = {
+                "nota": {
+                    "title": "Mejorando.la #node-pro",
+                    "description": "Introduccion a clase",
+                    "type": "js",
+                    "body": "soy el cuerpo de json"
+                }
+            };
+
+            request
+                .post('/notas')
+                .set('Accept', 'application/json')
+                .send(data)
+                .expect(201)
+                .expect('Content-Type', /application\/json/)
+            .then(function deleteNote(res){
+                    id = res.body.nota.id;
+
+                    return request.delete('/notas/' + id)
+                      .set('Accept', 'application/json')
+                      .expect(204)
+                },done)
+                .then(function assertNoteDestroyed(res){
+                    return request.get('/notas/'+id)
+                        .expect(400);// o 400
+                }, done)
+                .then(function(){
+                    done();
+                })
+            // enviar a eliminar nota existente
+            // confirmar que la nota no existe
         });
     });
 })
